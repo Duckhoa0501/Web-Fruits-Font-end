@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Sản Phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="shortcut icon" href="/img/login/Favicon.png" type="image/x-icon">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center text-primary">Danh Sách Sản Phẩm</h2>
+        <div class="row" id="product-list"></div>
+
+        <h3 class="mt-5">Thêm Sản Phẩm</h3>
+        <div class="mb-3">
+            <input type="text" id="name" class="form-control" placeholder="Tên sản phẩm">
+        </div>
+        <div class="mb-3">
+            <input type="number" id="price" class="form-control" placeholder="Giá">
+        </div>
+        <div class="mb-3">
+            <input type="text" id="img" class="form-control" placeholder="Đường dẫn hình ảnh">
+        </div>
+        <div class="mb-3">
+            <input type="text" id="loai" class="form-control" placeholder="Loại sản phẩm">
+        </div>
+        <button class="btn btn-success" id="add-product">Thêm Sản Phẩm</button>
+    </div>
+
+    <script type="module">
+        import products from '/Main/Client/product.js';
+        
+        function renderProducts() {
+            $('#product-list').html('');
+            products.forEach((product, index) => {
+                $('#product-list').append(`
+                    <div class="col-md-3 mb-3">
+                        <div class="product-card">
+                            <img src="${product.img}" class="img-fluid" alt="${product.name}" style="height:150px;">
+                            <h5>${product.name}</h5>
+                            <p>$${product.price.toFixed(2)}</p>
+                            <p><strong>Loại:</strong> ${product.loai}</p>
+                            <button class="btn btn-danger btn-sm" onclick="removeProduct(${index})">Xóa</button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        window.removeProduct = function(index) {
+            products.splice(index, 1);
+            renderProducts();
+        }
+
+        $('#add-product').click(function() {
+            let name = $('#name').val();
+            let price = parseFloat($('#price').val());
+            let img = $('#img').val();
+            let loai = $('#loai').val();
+
+            if (name && !isNaN(price) && img && loai) {
+                products.push({ name, price, img, loai });
+                renderProducts();
+            }
+        });
+
+        function removeProduct(productName) {
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    products = products.filter(product => product.name !== productName);
+    localStorage.setItem("products", JSON.stringify(products));
+    
+    // Cập nhật giao diện Admin
+    renderProductList();
+}
+
+        renderProducts();
+    </script>
+</body>
+</html>
